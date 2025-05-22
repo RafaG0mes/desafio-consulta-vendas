@@ -8,9 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.devsuperior.dsmeta.entities.Sale;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface SaleRepository extends JpaRepository<Sale, Long> {
 
     @Query("Select obj FROM Seller obj WHERE UPPER(obj.name) LIKE UPPER(CONCAT('%',:name, '%'))")
-    Page<Seller> searchByName(String name, Pageable pageable);
+    List<Seller> searchByName(String name);
 
 }
