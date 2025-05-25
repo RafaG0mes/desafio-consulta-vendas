@@ -1,12 +1,15 @@
 package com.devsuperior.dsmeta.services;
 
-import java.util.List;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import com.devsuperior.dsmeta.dto.SellerNameDTO;
-import com.devsuperior.dsmeta.entities.Seller;
+import com.devsuperior.dsmeta.dto.SellerReportDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.devsuperior.dsmeta.dto.SaleMinDTO;
@@ -16,6 +19,9 @@ import com.devsuperior.dsmeta.repositories.SaleRepository;
 @Service
 public class SaleService {
 
+	private final DateTimeFormatter dtm = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private LocalDate today = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
+	private LocalDate result = today.minusYears(1L);
 	@Autowired
 	private SaleRepository repository;
 	
@@ -25,8 +31,18 @@ public class SaleService {
 		return new SaleMinDTO(entity);
 	}
 
-	public List<SellerNameDTO> searchByName(String name){
-		List<Seller> result = repository.searchByName(name);
-		return result.stream().map(x -> new SellerNameDTO(x)).collect(Collectors.toList());
+	public Page<SellerReportDTO> searchByName(String name, String minDate, String maxDate, Pageable pageable){
+		if(minDate.trim().isEmpty()){
+			minDate = String.valueOf(result);
+		}
+
+		if(maxDate.trim().isEmpty()){
+			maxDate = String.valueOf(today);
+		}
+		LocalDate dateMin = LocalDate.parse(minDate, dtm);
+		LocalDate dateMax = LocalDate.parse(maxDate, dtm);
+		Page<Sale> result = repository.searchBySellerName(name, dateMin, dateMax, pageable);
+		return result.map(x -> new SellerReportDTO(x));
 	}
+
 }
