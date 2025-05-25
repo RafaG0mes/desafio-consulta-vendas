@@ -1,7 +1,8 @@
 package com.devsuperior.dsmeta.repositories;
 
-import com.devsuperior.dsmeta.dto.SaleMinDTO;
+import com.devsuperior.dsmeta.dto.SaleSumDTO;
 import com.devsuperior.dsmeta.entities.Sale;
+import com.devsuperior.dsmeta.projections.SaleSumProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,11 +29,11 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     Page<Sale> searchBySellerName(String name, LocalDate minDate, LocalDate maxDate, Pageable pageable);
 
 
-    @Query(nativeQuery = true, value = "SELECT  TB_SELLER.NAME, SUM(TB_SALES.AMOUNT) AS TOTAL" +
+    @Query(nativeQuery = true, value = "SELECT  TB_SELLER.NAME, SUM(TB_SALES.AMOUNT) AS TOTAL " +
             "FROM TB_SELLER " +
             "INNER JOIN TB_SALES ON TB_SALES.SELLER_ID = TB_SELLER.ID " +
             "WHERE TB_SALES.DATE BETWEEN :minDate AND :maxDate " +
             "GROUP BY TB_SELLER.NAME ")
-    Page<SaleMinDTO> searchBySaleSelerSummary(LocalDate minDate, LocalDate maxDate, Pageable pageable);
+    Page<SaleSumProjection> searchBySaleSelerSummary(LocalDate minDate, LocalDate maxDate, Pageable pageable);
 
 }

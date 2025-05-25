@@ -6,7 +6,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import com.devsuperior.dsmeta.dto.SaleSumDTO;
 import com.devsuperior.dsmeta.dto.SellerReportDTO;
+import com.devsuperior.dsmeta.projections.SaleSumProjection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +45,22 @@ public class SaleService {
 		LocalDate dateMax = LocalDate.parse(maxDate, dtm);
 		Page<Sale> result = repository.searchBySellerName(name, dateMin, dateMax, pageable);
 		return result.map(x -> new SellerReportDTO(x));
+	}
+
+	public Page<SaleSumDTO> searchBySaleSelerSummary(String minDate, String maxDate, Pageable pageable){
+		if(minDate.trim().isEmpty()){
+			minDate = String.valueOf(result);
+		}
+
+		if(maxDate.trim().isEmpty()){
+			maxDate = String.valueOf(today);
+		}
+		LocalDate dateMin = LocalDate.parse(minDate, dtm);
+		LocalDate dateMax = LocalDate.parse(maxDate, dtm);
+
+		Page<SaleSumProjection> list = repository.searchBySaleSelerSummary(dateMin, dateMax, pageable);
+		Page<SaleSumDTO> result = list.map(x -> new SaleSumDTO(x));
+		return result;
 	}
 
 }
